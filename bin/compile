@@ -1,21 +1,47 @@
-#!/usr/bin/env bash
+##!/usr/bin/env bash
+#
+## Define the version of whois you want to install
+#WHOIS_VERSION="5.5.12"
+#
+## Set up the installation directory
+#INSTALL_DIR="$1"
+#mkdir -p $INSTALL_DIR
+#
+## Download and extract whois
+#curl -L -O "https://github.com/rfc1036/whois/archive/v$WHOIS_VERSION.tar.gz"
+#tar xzf "v$WHOIS_VERSION.tar.gz"
+#
+## Build and install whois
+#cd "whois-$WHOIS_VERSION"
+#make
+#make install PREFIX="$INSTALL_DIR"
+#cd ..
+#
+## Clean up
+#rm -rf "v$WHOIS_VERSION.tar.gz" "whois-$WHOIS_VERSION"
 
-# Define the version of whois you want to install
-WHOIS_VERSION="5.5.12"
 
-# Set up the installation directory
-INSTALL_DIR="$1"
-mkdir -p $INSTALL_DIR
+#!/bin/sh
 
-# Download and extract whois
-curl -L -O "https://github.com/rfc1036/whois/archive/v$WHOIS_VERSION.tar.gz"
-tar xzf "v$WHOIS_VERSION.tar.gz"
+set -e
 
-# Build and install whois
-cd "whois-$WHOIS_VERSION"
-make
-make install PREFIX="$INSTALL_DIR"
-cd ..
+BUILD_DIR=$1
+CACHE_DIR=$2
 
-# Clean up
-rm -rf "v$WHOIS_VERSION.tar.gz" "whois-$WHOIS_VERSION"
+# Config
+PACKAGE="whois_5.5.17_amd64.deb"
+URL="http://http.us.debian.org/debian/pool/main/w/whois/${PACKAGE}"
+
+# Download
+mkdir -p $CACHE_DIR
+if ! [ -e $CACHE_DIR/$PACKAGE ]; then
+    echo "-----> Downloading whois Debian package from ${URL} to ${CACHE_DIR}/${PACKAGE}"
+    curl -s -L -o $CACHE_DIR/$PACKAGE $URL 2>&1
+fi
+
+# Install
+echo "-----> Installing whois package to ${BUILD_DIR}/vendor/whois/usr/bin/whois"
+mkdir -p $BUILD_DIR/vendor/whois
+dpkg -x $CACHE_DIR/$PACKAGE $BUILD_DIR/vendor/whois
+
+echo "export PATH=\$HOME/vendor/whois/usr/bin:\$PATH" >> $BUILD_DIR/.profile.d/whois_buildpack_paths.sh
