@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-# Print the buildpack's name
-echo "heroku-whois-buildpack"
+echo "whois"
+exit 0
