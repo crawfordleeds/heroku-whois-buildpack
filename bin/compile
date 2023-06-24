@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Define the version of whois you want to install
+WHOIS_VERSION="5.5.12"
+
+# Set up the installation directory
+INSTALL_DIR="$1"
+mkdir -p $INSTALL_DIR
+
+# Download and extract whois
+curl -L -O "https://github.com/rfc1036/whois/archive/v$WHOIS_VERSION.tar.gz"
+tar xzf "v$WHOIS_VERSION.tar.gz"
+
+# Build and install whois
+cd "whois-$WHOIS_VERSION"
+make
+make install PREFIX="$INSTALL_DIR"
+cd ..
+
+# Clean up
+rm -rf "v$WHOIS_VERSION.tar.gz" "whois-$WHOIS_VERSION"
